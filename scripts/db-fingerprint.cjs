@@ -1,0 +1,2 @@
+const fs=require('node:fs'),crypto=require('node:crypto'),init=require('sql.js');
+(async()=>{const SQL=await init(),db=new SQL.Database(fs.readFileSync(process.argv[2]));try{if(db.exec('PRAGMA integrity_check')[0]?.values[0]?.[0]!=='ok')throw Error('Database integrity check failed');const data={};for(const table of ['items','notes','settings'])data[table]=db.exec(`SELECT * FROM ${table} ORDER BY 1`);console.log(crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex'));}finally{db.close()}})().catch(e=>{console.error(e.message);process.exitCode=1});

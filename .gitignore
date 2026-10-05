@@ -1,0 +1,29 @@
+# Dependencies and generated builds
+node_modules/
+release/
+work/
+dist/
+*.log
+
+# Local application data and test artifacts
+data/
+test-data/
+guanying-diary/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+backups/
+update-backups/
+assets/
+subtitles/
+account-service/
+account-client.json
+
+# Local editor and OS files
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+
+# Keep the source copy of mpv under Git LFS instead of duplicating generated releases.
+# The executable itself is tracked by .gitattributes.

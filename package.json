@@ -1,0 +1,55 @@
+{
+  "name": "guanying-diary",
+  "version": "0.6.0",
+  "description": "观影 · 私人的电影日记",
+  "main": "src/main.cjs",
+  "author": "Personal Cinema",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.cjs",
+    "test:desktop": "node test/desktop.cjs",
+    "pack": "electron-builder --dir"
+  },
+  "dependencies": {
+    "sql.js": "^1.13.0",
+    "adm-zip": "^0.6.1",
+    "iconv-lite": "^0.7.0"
+  },
+  "devDependencies": {
+    "electron": "^44.5.0",
+    "electron-builder": "^26.0.12",
+    "@playwright/test": "^1.56.0"
+  },
+  "build": {
+    "appId": "local.guanying.diary",
+    "productName": "观影",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {"from":"extension","to":"bilibili-extension"},
+      {"from":"src/keys.lua","to":"host/keys.lua"},
+      {"from":"src/Read-Subtitle.ps1","to":"host/Read-Subtitle.ps1"},
+      {"from":"vendor/host","to":"host"},
+      {
+        "from": "vendor/mpv",
+        "to": "mpv"
+      },
+      {
+        "from": "src/ui/icon.ico",
+        "to": "app-icon-0.6.0.ico"
+      }
+    ],
+    "win": {
+      "target": "dir",
+      "icon": "src/ui/icon.ico",
+      "signExecutable": false
+    },
+    "asar": true
+  }
+}
