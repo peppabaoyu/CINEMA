@@ -7,3 +7,7 @@ $taskMpv=Join-Path $taskRoot 'vendor/mpv/mpv.exe'
 if($LASTEXITCODE -ne 0){throw 'AVI fixture creation failed'}
 & $taskMpv --no-config --no-terminal '--length=3' '--ovc=libx265' '--ovcopts=preset=ultrafast' '--oac=aac' '--audio-file=av://lavfi:sine=frequency=440:sample_rate=48000' ('--o='+ (Join-Path $taskWork 'test-hevc.mkv')) 'av://lavfi:testsrc2=size=1920x1080:rate=24'
 if($LASTEXITCODE -ne 0){throw 'HEVC fixture creation failed'}
+& $taskMpv --no-config --no-terminal --no-audio '--length=12' '--ovc=libvpx' '--of=webm' ('--o='+ (Join-Path $taskWork 'test-browser.webm')) 'av://lavfi:testsrc2=size=640x360:rate=24'
+if($LASTEXITCODE -ne 0){throw 'Browser WebM fixture creation failed'}
+& $taskMpv --no-config --no-terminal --no-audio '--length=12' '--ovc=libx264' '--ovcopts=preset=ultrafast' '--of=mp4' ('--o='+ (Join-Path $taskWork 'test-mobile.mp4')) 'av://lavfi:testsrc2=size=640x360:rate=24'
+if($LASTEXITCODE -ne 0){throw 'Mobile MP4 fixture creation failed'}

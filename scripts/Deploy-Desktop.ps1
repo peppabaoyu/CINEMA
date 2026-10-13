@@ -1,4 +1,4 @@
-param([string]$SourceDirectory=(Join-Path $PSScriptRoot '../release/win-unpacked'),[string]$TestedAppHash='')
+param([string]$SourceDirectory=(Join-Path $PSScriptRoot '../release/win-unpacked'),[string]$TestedAppHash='',[switch]$ReuseUnchangedPlayerMouseTest)
 $ErrorActionPreference='Stop'
 $taskProject=(Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $taskSource=(Resolve-Path -LiteralPath $SourceDirectory).Path
@@ -45,8 +45,21 @@ try {
   if($taskHash -ne $TestedAppHash){throw 'Previous verification does not match staged app'}
   Write-Output 'Reusing successful packaged tests for this exact application hash.'
  }else{
+ if($ReuseUnchangedPlayerMouseTest){
+ & node (Join-Path $PSScriptRoot 'check-unchanged-mouse.cjs') $taskTarget $taskStage
+ if($LASTEXITCODE -ne 0){throw 'Player input changed; real mouse verification is required.'}
+ }else{
  & node (Join-Path $taskProject 'test/mouse.cjs')
  if($LASTEXITCODE -ne 0){throw 'Actual Windows mouse test failed; current installation untouched.'}
+ }
+ & node (Join-Path $taskProject 'test/mobile-upgrade.cjs')
+ if($LASTEXITCODE -ne 0){throw 'Cached mobile page upgrade and ticket recovery test failed; current installation untouched.'}
+ & node (Join-Path $taskProject 'test/mobile-playback.cjs')
+ if($LASTEXITCODE -ne 0){throw 'Packaged mobile compatibility playback test failed; current installation untouched.'}
+ & node (Join-Path $taskProject 'test/lan-desktop.cjs')
+ if($LASTEXITCODE -ne 0){throw 'LAN mobile transfer test failed; current installation untouched.'}
+ & node (Join-Path $taskProject 'test/browser-desktop.cjs')
+ if($LASTEXITCODE -ne 0){throw 'Integrated browser test failed; current installation untouched.'}
  & node (Join-Path $taskProject 'test/batch-desktop.cjs')
  if($LASTEXITCODE -ne 0){throw 'Batch management test failed; current installation untouched.'}
  & node (Join-Path $taskProject 'test/account-desktop.cjs')
@@ -90,7 +103,7 @@ try{
  $taskLink=$taskShell.CreateShortcut((Join-Path $taskDesktop '观影.lnk'))
  $taskLink.TargetPath=$taskExe
  $taskLink.WorkingDirectory=$taskTarget
- $taskLink.IconLocation=(Join-Path $taskTarget 'resources/app-icon-0.6.0.ico')+',0'
+ $taskLink.IconLocation=(Join-Path $taskTarget 'resources/app-icon-0.8.2.ico')+',0'
  $taskLink.Description='观影 · 私人的电影日记'
  $taskLink.Save()
 }catch{
@@ -104,3 +117,6 @@ try{
 }
 if($taskHadOld){Assert-ProgramPath $taskOld|Out-Null;Remove-Item -LiteralPath $taskOld -Recurse -Force}
 Write-Output ('Desktop installation complete: '+$taskExe)
+
+
+

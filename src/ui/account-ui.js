@@ -1,6 +1,6 @@
 async function renderAccount(){
  const s=await api.accountStatus();if(view!=='account')return;
- $('.main').innerHTML=`<div class="top"><div><h1>账号与 B 站</h1></div><button id="guide">新手指引</button></div><div class="settings-card"><h2>${s.connected?esc(s.username):'登录你的观影账号'}</h2><p>${s.connected?(s.remote?'已连接在线服务 · 使用同一服务的另一台 Windows 可同步笔记和截图':'仅本机联动 · 电脑关机后不可用；另一台电脑不能用此地址同步'):'首次登录会将本机日记绑定到该账号及服务，以后继续使用同一账号。'}</p><p class="details-path">${esc(s.url)}</p><p class="error">${esc(s.localError||s.error)}</p><p>最近成功同步：${s.lastSync?new Date(s.lastSync).toLocaleString('zh-CN'):'尚未同步'}</p><div class="row wrap">${s.connected?'<button class="primary" id="sync-now">立即同步</button><button id="logout">退出登录</button>':'<button class="primary" id="login">登录 / 注册</button>'}${s.conflicts?'<button id="conflicts">处理 '+s.conflicts+' 条冲突</button>':''}</div><p class="notice">同步影片档案、进度、笔记、截图及 B 站链接；不会上传整部视频、外挂字幕或本机文件路径。跨电脑需要单独部署在线服务。暂未提供手机和 iPad 客户端。</p></div><div class="settings-card"><h2>电脑 B 站插件</h2><p>直接在 B 站网页摘记，保存原台词、片段起止点和画面，然后回到观影整理、回看或导出台词拼图。插件需使用相同的服务地址和账号。</p><button id="extension">打开插件文件夹</button><p>打开浏览器扩展管理页 → 开启开发者模式 → 加载解压缩的扩展 → 选择打开的文件夹。固定插件图标，在 B 站视频页点击它并登录。</p><small>仅支持电脑网页端。字幕只取播放器提供的原文，取不到时保留截图并手动填写，不翻译。</small></div>`;
+ $('.main').innerHTML=`<div class="top"><div><h1>账号与同步</h1></div><button id="guide">新手指引</button></div><div class="settings-card"><h2>${s.connected?esc(s.username):'登录你的观影账号'}</h2><p>${s.connected?(s.remote?'已连接在线服务 · 使用同一服务的另一台 Windows 可同步笔记和截图':'仅本机联动 · 电脑关机后不可用；另一台电脑不能用此地址同步'):'首次登录会将本机日记绑定到该账号及服务，以后继续使用同一账号。'}</p><p class="details-path">${esc(s.url)}</p><p class="error">${esc(s.localError||s.error)}</p><p>最近成功同步：${s.lastSync?new Date(s.lastSync).toLocaleString('zh-CN'):'尚未同步'}</p><div class="row wrap">${s.connected?'<button class="primary" id="sync-now">立即同步</button><button id="logout">退出登录</button>':'<button class="primary" id="login">登录 / 注册</button>'}${s.conflicts?'<button id="conflicts">处理 '+s.conflicts+' 条冲突</button>':''}</div><p class="notice">同步影片档案、进度、笔记、截图及 B 站链接；不会上传整部视频、外挂字幕或本机文件路径。跨电脑需要单独部署在线服务。手机 / iPad 的局域网页入口位于「手机 / iPad 连接」，不使用此云账号。</p></div><div class="settings-card"><h2>系统浏览器的旧版 B 站扩展（可选）</h2><p>新方式请进入左侧「插件观影」，不用安装扩展。此处保留旧版浏览器扩展，用于直接在系统浏览器 B 站网页摘记，保存原台词、片段起止点和画面，然后回到观影整理、回看或导出台词拼图。插件需使用相同的服务地址和账号。</p><button id="extension">打开插件文件夹</button><p>打开浏览器扩展管理页 → 开启开发者模式 → 加载解压缩的扩展 → 选择打开的文件夹。固定插件图标，在 B 站视频页点击它并登录。</p><small>仅支持电脑网页端。字幕只取播放器提供的原文，取不到时保留截图并手动填写，不翻译。</small></div>`;
  on('#guide',()=>beginnerGuide());on('#extension',()=>api.openExtension());on('#login',()=>accountLoginDialog(s));on('#logout',async()=>{await api.accountLogout();renderAccount()});on('#sync-now',async()=>{$('#sync-now').disabled=true;try{await api.accountSync();await refresh();toast('同步完成')}finally{renderAccount()}});on('#conflicts',accountConflictsDialog);
 }
 function accountLoginDialog(status){
@@ -12,12 +12,12 @@ async function accountConflictsDialog(){
 }
 function beginnerGuide(step=0){
  const steps=[
- ['欢迎来到观影','本机影片继续原画播放。B 站插件让你直接在浏览器做笔记；统一账号负责联动这些记录。视频文件暂不上传云端。'],
- ['先建立账号','从「账号与 B 站」登录或注册。默认本机地址用于这台电脑的插件联动。真正跨电脑需要部署 HTTPS 服务。'],
- ['安装 B 站插件','打开插件文件夹，到 Edge / Chrome 扩展管理页开启开发者模式并加载该文件夹。固定图标，在 B 站视频页点击，填写同一服务地址及账号。'],
- ['边看边留住触动','插件 N 摘一句、S 截图、B 收藏画面；I 起点、O 终点。先在面板开启快捷键，输入文字时快捷键停用。台词只保存原文，取不到时手填。'],
- ['回味与同步','观影登录后每 20 秒同步一次，也可手动同步。摘记能跳回 B 站片段或导出两种拼图。插件断网记录留在待同步列表，重连后重试。'],
- ['换电脑前确认','两台 Windows 用相同在线服务和账号，完成同步后再换机。本机地址不是云端。已有视频需迁移或重新关联。iPad 暂不做，备份功能保留。']];
+ ['欢迎来到观影','本机影片继续原画播放。「插件观影」可直接打开网站，浏览器自带台词、片段和截图工具；本机摘记不需要账号。'],
+ ['选择观看方式','本机视频在我的片库观看；网站视频从「插件观影」进入，点常用网站，或输入网址、搜索词。还可以添加自己常用的网站。'],
+ ['网页工具自动就绪','网站会在内置浏览器打开。像普通浏览器一样搜索并播放，摘记工具一直在旁边。多播放器可手动选择；检测不到时使用手动摘记。'],
+ ['边看边留住触动','本机视频用 N/S/B/I/O；网页用 Alt+N/S/B/I/O，避免影响搜索。Ctrl+Enter 保存。字幕只取原文，无可读字幕时手填；图片注明原尺寸或网页显示尺寸。'],
+ ['回味与同步','网页摘记直接存入观影，不必另外登录。在我的摘记回看片段、循环或导出两种拼图。Alt+H 沉浸、Alt+P 摘记栏；记得定期备份。'],
+ ['换电脑前确认','两台 Windows 用相同在线服务和账号，完成同步后再换机。本机地址不是云端。已有视频需迁移或重新关联。手机 / iPad 可通过「手机 / iPad 连接」扫码，在同一 Wi-Fi 使用移动网页端。云端同步与本机副本仍需区分。']];
  dialog(`<div class="eyebrow">新手指引 ${step+1} / ${steps.length}</div><h2>${steps[step][0]}</h2><p>${steps[step][1]}</p><div class="buttons"><button id="cancel">稍后再看</button>${step?'<button id="guide-back">上一步</button>':''}<button class="primary" id="guide-next">${step===steps.length-1?'完成指引':'下一步'}</button></div>`);
  on('#guide-back',()=>beginnerGuide(step-1));on('#guide-next',async()=>{if(step<steps.length-1)return beginnerGuide(step+1);await api.saveSettings({guideDone:true});await refresh();closeDialog();render()});
 }

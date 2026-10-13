@@ -27,3 +27,9 @@ Desktop.ini
 
 # Keep the source copy of mpv under Git LFS instead of duplicating generated releases.
 # The executable itself is tracked by .gitattributes.
+# Private LAN pairing and temporary image uploads
+lan-devices.json
+lan-temp/
+mobile-playback-cache/
+mobile-playback-events.json
+

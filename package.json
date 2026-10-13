@@ -1,6 +1,6 @@
 {
   "name": "guanying-diary",
-  "version": "0.6.0",
+  "version": "0.8.2",
   "description": "观影 · 私人的电影日记",
   "main": "src/main.cjs",
   "author": "Personal Cinema",
@@ -12,14 +12,15 @@
     "pack": "electron-builder --dir"
   },
   "dependencies": {
-    "sql.js": "^1.13.0",
     "adm-zip": "^0.6.1",
-    "iconv-lite": "^0.7.0"
+    "iconv-lite": "^0.7.0",
+    "qrcode": "1.5.4",
+    "sql.js": "^1.13.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.0",
     "electron": "^44.5.0",
-    "electron-builder": "^26.0.12",
-    "@playwright/test": "^1.56.0"
+    "electron-builder": "^26.0.12"
   },
   "build": {
     "appId": "local.guanying.diary",
@@ -32,17 +33,33 @@
       "package.json"
     ],
     "extraResources": [
-      {"from":"extension","to":"bilibili-extension"},
-      {"from":"src/keys.lua","to":"host/keys.lua"},
-      {"from":"src/Read-Subtitle.ps1","to":"host/Read-Subtitle.ps1"},
-      {"from":"vendor/host","to":"host"},
+      {
+        "from": "extension",
+        "to": "bilibili-extension"
+      },
+      {
+        "from": "src/keys.lua",
+        "to": "host/keys.lua"
+      },
+      {
+        "from": "src/Read-Subtitle.ps1",
+        "to": "host/Read-Subtitle.ps1"
+      },
+      {
+        "from": "vendor/host",
+        "to": "host"
+      },
       {
         "from": "vendor/mpv",
         "to": "mpv"
       },
       {
         "from": "src/ui/icon.ico",
-        "to": "app-icon-0.6.0.ico"
+        "to": "app-icon-0.8.2.ico"
+      },
+      {
+        "from": "vendor/ffmpeg",
+        "to": "ffmpeg"
       }
     ],
     "win": {
