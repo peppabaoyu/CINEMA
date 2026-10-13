@@ -96,6 +96,8 @@ Windows x64 为已打包版本；本版未提供 macOS 构建。
 
 克隆后先运行 `git lfs pull`，再执行 `npm install` 和 `npm start`。`vendor/mpv` 存放 Windows mpv 引擎。`npm test` 运行数据和字幕测试；`node test/desktop.cjs` 与 `node test/experience.cjs` 使用隔离测试数据验证真实桌面功能，需要先运行 `scripts/Create-TestFixtures.ps1` 生成测试视频。`node test/import.cjs` 还会测试真实文件拖入、原文件删除后的播放和重启。
 
+手机实际编码回归还需自备一个包含 VC-1 视频和音轨的短 MKV 片段，保存为项目上两级 `work` 目录下的 `test-mobile-vc1.mkv`，供 `mobile-playback` / `mobile-upgrade` 使用；片段不提交到仓库。`npm test` 自行生成媒体，不依赖私人影片。
+
 `npm run pack -- --config.electronDist=node_modules/electron/dist --config.npmRebuild=false` 打包。
 
 `scripts/Deploy-Desktop.ps1` 会复制并校验暂存程序、执行打包版测试、备份现有数据、正常关闭旧程序、替换并创建快捷方式；失败保留旧版。部署需要当前用户的桌面写入权限，不修改系统 ACL。
